@@ -25,7 +25,27 @@ export async function POST(request: Request) {
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (existingUserByEmail) {
-      true;
+      if (existingUserByEmail.isVerified) {
+        return Response.json(
+          {
+            success: false,
+            message: "User already exist with this email",
+          },
+          {
+            status: 400,
+          }
+        );
+      } else {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        existingUserByEmail.password = hashedPassword;
+
+        existingUserByEmail.verifyCode = verifyCode;
+
+        existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
+
+        await existingUserByEmail.save();
+      }
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
 
