@@ -1,6 +1,9 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import Logo from "./components/Logo";
 import Typewriter from "typewriter-effect";
+import { RiMailLine } from "@remixicon/react";
+import Link from "next/link";
 
 interface Props {}
 
@@ -15,7 +18,7 @@ const Home = (props: Props) => {
               Transforming Feedback with AI-Driven Insights
             </p>
           </span>
-          <span className="text-orange-600 text-4xl md:text-8xl">
+          <span className="text-orange-500 text-4xl md:text-8xl">
             <Typewriter
               options={{
                 strings: [
@@ -29,6 +32,13 @@ const Home = (props: Props) => {
               }}
             />
           </span>
+          <div className="mt-6">
+            <Link href={"/sign-in"}>
+              <Button className="bg-orange-500 hover:bg-orange-600 rounded-xl">
+                <RiMailLine className="mr-2 h-4 w-4" /> Login with Email
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </>

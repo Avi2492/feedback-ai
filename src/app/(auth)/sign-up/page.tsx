@@ -1,12 +1,12 @@
 "use client";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounceValue, useDebounceCallback } from "usehooks-ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { signInSchema } from "@/schemas/signInSchema";
+
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { signUpSchema } from "@/schemas/signUpSchema";
@@ -32,30 +32,33 @@ const SignInPage = (props: Props) => {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const deboucedUsername = useDebounceValue(username, 300);
+  const debouced = useDebounceCallback(setUsername, 300);
   const { toast } = useToast();
   const router = useRouter();
 
   // zod implementation
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
     },
   });
 
   useEffect(() => {
     const checkUsernameUnique = async () => {
-      if (deboucedUsername) {
+      if (username) {
         setIsCheckingUsername(true);
         setUsernameMessage("");
 
         try {
           const response = await axios.get(
-            `/api/check-username-unique?username=${deboucedUsername}`
+            `/api/check-username-unique?username=${username}`
           );
-          setUsernameMessage(response.data.message);
+
+          let message = response.data.message;
+          setUsernameMessage(message);
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
           setUsernameMessage(
@@ -68,7 +71,7 @@ const SignInPage = (props: Props) => {
     };
 
     checkUsernameUnique();
-  }, [deboucedUsername]);
+  }, [username]);
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
@@ -107,15 +110,15 @@ const SignInPage = (props: Props) => {
             <Logo />
           </div>
           <h2 className="text-center text-2xl font-bold leading-tight text-black">
-            Sign in to Continue
+            Sign up to create account
           </h2>
           <p className="mt-2 text-center text-base text-gray-600">
-            {"Don't"} have an account?{" "}
+            Already have an account?{" "}
             <Link
-              href="/sign-up"
+              href="/sign-in"
               className="font-medium text-orange-500 transition-all duration-200 hover:underline hover:text-orange-600"
             >
-              Sign Up
+              Sign In
             </Link>
           </p>
           <Form {...form}>
@@ -135,11 +138,36 @@ const SignInPage = (props: Props) => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          setUsername(e.target.value);
+                          debouced(e.target.value);
                         }}
                       />
                     </FormControl>
+                    {isCheckingUsername && (
+                      <RiLoader2Line className="animate-spin" />
+                    )}
+                    <p
+                      className={`text-sm ${
+                        usernameMessage === "Username is unique"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {usernameMessage}
+                    </p>
 
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your Email" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -173,7 +201,7 @@ const SignInPage = (props: Props) => {
                   </>
                 ) : (
                   <>
-                    <RiLoginCircleLine className="mr-2" /> Sign In
+                    <RiLoginCircleLine className="mr-2" /> Sign Up
                   </>
                 )}
               </Button>
