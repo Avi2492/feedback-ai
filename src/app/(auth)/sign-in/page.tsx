@@ -23,16 +23,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
+import { signIn } from "next-auth/react";
 
 type Props = {};
 
 const SignInPage = (props: Props) => {
-  const [username, setUsername] = useState("");
-  const [usernameMessage, setUsernameMessage] = useState("");
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const deboucedUsername = useDebounceValue(username, 300);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -40,62 +37,28 @@ const SignInPage = (props: Props) => {
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  useEffect(() => {
-    const checkUsernameUnique = async () => {
-      if (deboucedUsername) {
-        setIsCheckingUsername(true);
-        setUsernameMessage("");
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
+    });
 
-        try {
-          const response = await axios.get(
-            `/api/check-username-unique?username=${deboucedUsername}`
-          );
-          setUsernameMessage(response.data.message);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          setUsernameMessage(
-            axiosError.response?.data.message ?? "Error in checking Username"
-          );
-        } finally {
-          setIsCheckingUsername(false);
-        }
-      }
-    };
-
-    checkUsernameUnique();
-  }, [deboucedUsername]);
-
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    setIsSubmitting(true);
-
-    try {
-      const response = await axios.post<ApiResponse>("/api/sign-up", data);
-
+    if (result?.error) {
       toast({
-        title: "Success",
-        description: response.data.message,
-      });
-
-      router.replace(`/verify/${username}`);
-    } catch (error: any) {
-      console.error(error);
-
-      const axiosError = error as AxiosError<ApiResponse>;
-
-      let errorMessage = axiosError.response?.data.message;
-
-      toast({
-        title: "Signup Failed",
-        description: errorMessage,
+        title: "Login Failed",
+        description: "Incorrect Username and Password",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
+    }
+
+    if (result?.url) {
+      router.replace("/dashboard");
     }
   };
 
@@ -125,7 +88,7 @@ const SignInPage = (props: Props) => {
             >
               <FormField
                 control={form.control}
-                name="username"
+                name="identifier"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
