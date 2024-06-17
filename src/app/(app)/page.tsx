@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Logo from "./components/Logo";
+import Logo from "../components/Logo";
 import Typewriter from "typewriter-effect";
 import { RiMailLine } from "@remixicon/react";
 import Link from "next/link";
