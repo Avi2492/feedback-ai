@@ -1,15 +1,11 @@
 "use client";
-import { useDebounceValue } from "usehooks-ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { signInSchema } from "@/schemas/signInSchema";
-import axios, { AxiosError } from "axios";
-import { ApiResponse } from "@/types/ApiResponse";
-import { signUpSchema } from "@/schemas/signUpSchema";
 import Logo from "@/app/components/Logo";
 import Link from "next/link";
 import {
@@ -22,25 +18,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
 import { signIn } from "next-auth/react";
 
-type Props = {};
-
-const SignInPage = (props: Props) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { toast } = useToast();
+const SignInPage = () => {
   const router = useRouter();
 
-  // zod implementation
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
+
+  const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn("credentials", {
@@ -50,11 +41,19 @@ const SignInPage = (props: Props) => {
     });
 
     if (result?.error) {
-      toast({
-        title: "Login Failed",
-        description: "Incorrect Username and Password",
-        variant: "destructive",
-      });
+      if (result.error === "CredentialsSignin") {
+        toast({
+          title: "Login Failed",
+          description: "Incorrect Username and Password",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
     }
 
     if (result?.url) {
@@ -91,14 +90,13 @@ const SignInPage = (props: Props) => {
                 name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email/Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter your Username"
+                        placeholder="Enter your Email/Username"
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          setUsername(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -127,18 +125,8 @@ const SignInPage = (props: Props) => {
               <Button
                 type="submit"
                 className="bg-orange-500 hover:bg-orange-600 w-full"
-                disabled={isSubmitting}
               >
-                {isSubmitting ? (
-                  <>
-                    <RiLoader2Line className="mr-2 h-4 w-4 animate-spin" />{" "}
-                    Loading
-                  </>
-                ) : (
-                  <>
-                    <RiLoginCircleLine className="mr-2" /> Sign In
-                  </>
-                )}
+                Sign In
               </Button>
             </form>
           </Form>
