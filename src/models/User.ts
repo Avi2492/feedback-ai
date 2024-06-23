@@ -15,6 +15,7 @@ export interface User extends Document {
   isAcceptingMessage: boolean;
   messages: Message[];
 }
+
 // Document for type safety
 
 const MessageSchema: Schema<Message> = new Schema({
