@@ -1,40 +1,39 @@
 "use client";
-import { useDebounceValue, useDebounceCallback } from "usehooks-ts";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import React, { useEffect, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 
-import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
-import { signUpSchema } from "@/schemas/signUpSchema";
-import Logo from "@/app/components/Logo";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDebounceCallback } from "usehooks-ts";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
-  FormControl,
   FormField,
+  FormControl,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import axios, { AxiosError } from "axios";
 import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
+import { useRouter } from "next/navigation";
+import { signUpSchema } from "@/schemas/signUpSchema";
+import Logo from "@/app/components/Logo";
 
-type Props = {};
-
-const SignInPage = (props: Props) => {
+const SignUpPage = () => {
   const [username, setUsername] = useState("");
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const debouced = useDebounceCallback(setUsername, 300);
-  const { toast } = useToast();
+  const deboucedUsername = useDebounceCallback(setUsername, 300);
+
   const router = useRouter();
+  const { toast } = useToast();
 
   // zod implementation
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -53,12 +52,11 @@ const SignInPage = (props: Props) => {
         setUsernameMessage("");
 
         try {
-          const response = await axios.get(
+          const response = await axios.get<ApiResponse>(
             `/api/check-username-unique?username=${username}`
           );
 
-          let message = response.data.message;
-          setUsernameMessage(message);
+          setUsernameMessage(response.data.message);
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
           setUsernameMessage(
@@ -85,6 +83,8 @@ const SignInPage = (props: Props) => {
       });
 
       router.replace(`/verify/${username}`);
+
+      setIsSubmitting(false);
     } catch (error: any) {
       console.error(error);
 
@@ -97,7 +97,7 @@ const SignInPage = (props: Props) => {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
+
       setIsSubmitting(false);
     }
   };
@@ -138,23 +138,24 @@ const SignInPage = (props: Props) => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          debouced(e.target.value);
+                          deboucedUsername(e.target.value);
                         }}
                       />
                     </FormControl>
                     {isCheckingUsername && (
                       <RiLoader2Line className="animate-spin" />
                     )}
-                    <p
-                      className={`text-sm ${
-                        usernameMessage === "Username is unique"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {usernameMessage}
-                    </p>
-
+                    {!isCheckingUsername && usernameMessage && (
+                      <p
+                        className={`text-sm ${
+                          usernameMessage === "Username is unique"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {usernameMessage}
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -165,9 +166,10 @@ const SignInPage = (props: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your Email" {...field} />
-                    </FormControl>
+                    <Input placeholder="Enter your Email" {...field} />
+                    <p className="text-black text-sm">
+                      We will send you a verification code
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -178,13 +180,11 @@ const SignInPage = (props: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your Password"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your Password"
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -213,4 +213,4 @@ const SignInPage = (props: Props) => {
   );
 };
 
-export default SignInPage;
+export default SignUpPage;

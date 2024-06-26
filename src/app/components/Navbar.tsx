@@ -31,7 +31,8 @@ const Navbar = () => {
   };
   const { data: session } = useSession();
 
-  const user: User = session?.user as User;
+  const user: User = session?.user;
+
   return (
     <>
       <div className="relative w-full bg-white shadow-lg">

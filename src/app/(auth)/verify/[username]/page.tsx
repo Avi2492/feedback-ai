@@ -21,9 +21,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-interface Props {}
-
-const VerifyAccount = (props: Props) => {
+const VerifyAccount = () => {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -34,7 +32,7 @@ const VerifyAccount = (props: Props) => {
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
-      const response = await axios.post(`/api/verify-code`, {
+      const response = await axios.post<ApiResponse>(`/api/verify-code`, {
         username: params.username,
         code: data.code,
       });
@@ -44,14 +42,15 @@ const VerifyAccount = (props: Props) => {
         description: response.data.message,
       });
 
-      router.replace("sign-in");
+      router.replace("/sign-in");
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage = axiosError.response?.data.message;
-
       toast({
-        title: "Verification failed",
-        description: errorMessage,
+        title: "Verification Failed",
+        description:
+          axiosError.response?.data.message ??
+          "An error occurred. Please try again.",
+        variant: "destructive",
       });
     }
   };

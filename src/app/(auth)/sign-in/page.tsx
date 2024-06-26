@@ -3,12 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import React from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import { signInSchema } from "@/schemas/signInSchema";
-import Logo from "@/app/components/Logo";
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 import {
   Form,
   FormControl,
@@ -17,12 +12,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { signInSchema } from "@/schemas/signInSchema";
+import Logo from "@/app/components/Logo";
+import { useState } from "react";
+import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
+import { AxiosError } from "axios";
+import { ApiResponse } from "@/types/ApiResponse";
 
 const SignInPage = () => {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -35,30 +39,50 @@ const SignInPage = () => {
   const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.identifier,
-      password: data.password,
-    });
+    try {
+      setIsSubmitting(true);
 
-    if (result?.error) {
-      if (result.error === "CredentialsSignin") {
-        toast({
-          title: "Login Failed",
-          description: "Incorrect Username and Password",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: data.identifier,
+        password: data.password,
+      });
+
+      if (result?.error) {
+        if (result.error === "CredentialsSignin") {
+          toast({
+            title: "Login Failed",
+            description: "Incorrect Username and Password",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+        }
       }
-    }
 
-    if (result?.url) {
-      router.replace("/dashboard");
+      if (result?.url) {
+        router.replace("/dashboard");
+      }
+
+      setIsSubmitting(false);
+    } catch (error: any) {
+      console.error(error);
+
+      const axiosError = error as AxiosError<ApiResponse>;
+
+      let errorMessage = axiosError.response?.data.message;
+
+      toast({
+        title: "Signin Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
+      setIsSubmitting(false);
     }
   };
 
@@ -92,16 +116,13 @@ const SignInPage = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email/Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your Email/Username"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
-                      />
-                    </FormControl>
-
+                    <Input
+                      placeholder="Enter your Email/Username"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -112,22 +133,31 @@ const SignInPage = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your Password"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your Password"
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <Button
                 type="submit"
                 className="bg-orange-500 hover:bg-orange-600 w-full"
+                disabled={isSubmitting}
               >
-                Sign In
+                {isSubmitting ? (
+                  <>
+                    <RiLoader2Line className="mr-2 h-4 w-4 animate-spin" />{" "}
+                    Loading
+                  </>
+                ) : (
+                  <>
+                    <RiLoginCircleLine className="mr-2" /> Sign In
+                  </>
+                )}
               </Button>
             </form>
           </Form>

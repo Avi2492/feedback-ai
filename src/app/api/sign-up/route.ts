@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     }
 
     const existingUserByEmail = await UserModel.findOne({ email });
-    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
@@ -88,10 +89,10 @@ export async function POST(request: Request) {
     return Response.json(
       {
         success: true,
-        message: "User Registered SUcccess. Please verify your mail",
+        message: "User Registered Success. Please verify your mail",
       },
       {
-        status: 200,
+        status: 201,
       }
     );
   } catch (error) {
