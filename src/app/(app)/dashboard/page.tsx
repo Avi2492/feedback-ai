@@ -5,21 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { Message, User } from "@/models/User";
-import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
+import { Message } from "@/models/User";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RiLoader2Line, RiRefreshLine } from "@remixicon/react";
 import axios, { AxiosError } from "axios";
+import { RiLoader2Line, RiRefreshLine } from "@remixicon/react";
+import { User } from "next-auth";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
+import Link from "next/link";
 
-type Props = {};
-
-const DashboardPage = (props: Props) => {
+const UserDashboard = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
 
@@ -58,7 +58,7 @@ const DashboardPage = (props: Props) => {
     } finally {
       setIsSwitchLoading(false);
     }
-  }, [setValue]);
+  }, [setValue, toast]);
 
   const fetchMessages = useCallback(
     async (refresh: boolean = false) => {
@@ -89,15 +89,16 @@ const DashboardPage = (props: Props) => {
         setIsSwitchLoading(false);
       }
     },
-    [setIsLoading, setMessages]
+    [setIsLoading, setMessages, toast]
   );
 
   useEffect(() => {
     if (!session || !session.user) return;
 
     fetchMessages();
+
     fetchAcceptMessage();
-  }, [session, setValue, fetchAcceptMessage, fetchMessages]);
+  }, [session, setValue, toast, fetchAcceptMessage, fetchMessages]);
 
   // handle Switch change
   const handleSwitchChange = async () => {
@@ -137,6 +138,7 @@ const DashboardPage = (props: Props) => {
       description: "Profile url has been copied to clipboard",
     });
   };
+
   if (!session || !session.user) {
     return (
       <Link href={"/sign-up"}>
@@ -214,4 +216,4 @@ const DashboardPage = (props: Props) => {
   );
 };
 
-export default DashboardPage;
+export default UserDashboard;
