@@ -10,16 +10,8 @@ import Link from "next/link";
 
 const menuItems = [
   {
-    name: "Home",
-    href: "#",
-  },
-  {
-    name: "About",
-    href: "#",
-  },
-  {
-    name: "Contact",
-    href: "#",
+    name: "Dashboard",
+    href: "/dashboard",
   },
 ];
 

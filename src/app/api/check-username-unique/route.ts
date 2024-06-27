@@ -24,11 +24,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const queryParam = {
+    const queryParams = {
       username: searchParams.get("username"),
     };
 
-    const result = UsernameQuerySchema.safeParse(queryParam);
+    const result = UsernameQuerySchema.safeParse(queryParams);
 
     // console.log(result);
 

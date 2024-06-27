@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import MessageCard from "@/app/components/MessageCard";
 import { Button } from "@/components/ui/button";
@@ -6,20 +6,21 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { Message } from "@/models/User";
+import { User } from "next-auth";
+import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
 import { RiLoader2Line, RiRefreshLine } from "@remixicon/react";
-import { User } from "next-auth";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
-import Link from "next/link";
 
-const UserDashboard = () => {
+type Props = {};
+
+const DashboardPage = (props: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
 
@@ -96,9 +97,8 @@ const UserDashboard = () => {
     if (!session || !session.user) return;
 
     fetchMessages();
-
     fetchAcceptMessage();
-  }, [session, setValue, toast, fetchAcceptMessage, fetchMessages]);
+  }, [session, setValue, fetchAcceptMessage, fetchMessages]);
 
   // handle Switch change
   const handleSwitchChange = async () => {
@@ -124,7 +124,7 @@ const UserDashboard = () => {
     }
   };
 
-  const { username } = session?.user as User;
+  const username = session?.user as User;
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
 
@@ -138,7 +138,6 @@ const UserDashboard = () => {
       description: "Profile url has been copied to clipboard",
     });
   };
-
   if (!session || !session.user) {
     return (
       <Link href={"/sign-up"}>
@@ -216,4 +215,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default DashboardPage;

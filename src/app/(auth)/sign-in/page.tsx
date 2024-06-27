@@ -6,7 +6,6 @@ import * as z from "zod";
 import { signIn } from "next-auth/react";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -39,51 +38,35 @@ const SignInPage = () => {
   const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      const result = await signIn("credentials", {
-        redirect: false,
-        identifier: data.identifier,
-        password: data.password,
-      });
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
+    });
 
-      if (result?.error) {
-        if (result.error === "CredentialsSignin") {
-          toast({
-            title: "Login Failed",
-            description: "Incorrect Username and Password",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: result.error,
-            variant: "destructive",
-          });
-        }
+    if (result?.error) {
+      if (result.error === "CredentialsSignin") {
+        toast({
+          title: "Login Failed",
+          description: "Incorrect Username and Password",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
       }
-
-      if (result?.url) {
-        router.replace("/dashboard");
-      }
-
-      setIsSubmitting(false);
-    } catch (error: any) {
-      console.error(error);
-
-      const axiosError = error as AxiosError<ApiResponse>;
-
-      let errorMessage = axiosError.response?.data.message;
-
-      toast({
-        title: "Signin Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-
-      setIsSubmitting(false);
     }
+
+    if (result?.url) {
+      router.push("/dashboard");
+    }
+
+    setIsSubmitting(false);
   };
 
   return (

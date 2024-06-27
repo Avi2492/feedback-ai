@@ -1,8 +1,9 @@
+import UserModel from "@/models/User";
+import { getServerSession } from "next-auth/next";
 import connectMongoDB from "@/lib/connectMongoDB";
-import { User, getServerSession } from "next-auth";
+import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import mongoose from "mongoose";
-import UserModel from "@/models/User";
 
 export async function DELETE(
   request: Request,
@@ -12,9 +13,9 @@ export async function DELETE(
   await connectMongoDB();
 
   const session = await getServerSession(authOptions);
-  const user: User = session?.user as User;
+  const _user: User = session?.user;
 
-  if (!session || !session.user) {
+  if (!session || !_user) {
     return Response.json(
       {
         success: false,
@@ -24,11 +25,11 @@ export async function DELETE(
     );
   }
 
-  const userId = new mongoose.Types.ObjectId(user._id);
+  // const userId = new mongoose.Types.ObjectId(user._id);
 
   try {
     const deleteMessage = await UserModel.updateOne(
-      { _id: userId },
+      { _id: _user._id },
       {
         $pull: { messages: { _id: messageId } },
       }
@@ -49,7 +50,7 @@ export async function DELETE(
         success: true,
         message: "Message Deleted Success!",
       },
-      { status: 401 }
+      { status: 200 }
     );
   } catch (error: any) {
     return Response.json(
