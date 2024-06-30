@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import MessageCard from "@/app/components/MessageCard";
 import { Button } from "@/components/ui/button";
