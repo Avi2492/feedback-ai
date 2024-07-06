@@ -24,6 +24,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { messageSchema } from "@/schemas/messageSchema";
+import { RiPlaneLine, RiSendPlaneLine, RiTelegramLine } from "@remixicon/react";
 
 const specialChar = "||";
 
@@ -97,7 +98,7 @@ export default function SendMessage() {
 
   return (
     <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
-      <h1 className="text-4xl font-bold mb-6 text-center">
+      <h1 className="text-3xl md:text-6xl font-bold mb-6 text-center text-orange-500">
         Public Profile Link
       </h1>
       <Form {...form}>
@@ -107,7 +108,12 @@ export default function SendMessage() {
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Send Anonymous Message to @{username}</FormLabel>
+                <FormLabel className="flex gap-1 items-center">
+                  Send Anonymous Message to{" "}
+                  <p className="bg-orange-500 text-white p-1 rounded-lg">
+                    @{username}
+                  </p>
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Write your anonymous message here"
@@ -126,8 +132,12 @@ export default function SendMessage() {
                 Please wait
               </Button>
             ) : (
-              <Button type="submit" disabled={isLoading || !messageContent}>
-                Send It
+              <Button
+                className="bg-orange-500 flex items-center gap-2 justify-center"
+                type="submit"
+                disabled={isLoading || !messageContent}
+              >
+                Send It <RiTelegramLine size={24} />
               </Button>
             )}
           </div>
@@ -135,19 +145,25 @@ export default function SendMessage() {
       </Form>
 
       <div className="space-y-4 my-8">
-        <div className="space-y-2">
+        <div className="space-y-2 flex justify-center items-center">
           <Button
             onClick={fetchSuggestedMessages}
-            className="my-4"
+            className="my-4 bg-orange-400"
             disabled={isSuggestLoading}
           >
             Suggest Messages
           </Button>
-          <p>Click on any message below to select it.</p>
+        </div>
+        <div className="text-center">
+          <p className="text-3xl md:text-4xl">
+            Click on any message below to select it.
+          </p>
         </div>
         <Card>
           <CardHeader>
-            <h3 className="text-xl font-semibold">Messages</h3>
+            <h3 className="text-2xl flex justify-center">
+              Some Suggested Messages for your loved ones ❤️
+            </h3>
           </CardHeader>
           <CardContent className="flex flex-col space-y-4">
             {error ? (
@@ -171,7 +187,9 @@ export default function SendMessage() {
       <div className="text-center">
         <div className="mb-4">Get Your Message Board</div>
         <Link href={"/sign-up"}>
-          <Button>Create Your Account</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600">
+            Create Your Account
+          </Button>
         </Link>
       </div>
     </div>
