@@ -35,7 +35,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Failed to update user status",
         },
-        { status: 500 }
+        { status: 404 }
       );
     }
 
@@ -76,10 +76,10 @@ export async function GET(request: Request) {
     );
   }
 
-  const userId = user._id;
+  // const userId = user._id;
 
   try {
-    const foundUser = await UserModel.findById(userId);
+    const foundUser = await UserModel.findById(user._id);
 
     if (!foundUser) {
       return Response.json(

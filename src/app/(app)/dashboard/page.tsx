@@ -44,7 +44,7 @@ const DashboardPage = (props: Props) => {
     setIsSwitchLoading(true);
 
     try {
-      const response = await axios.get<ApiResponse>("/api/accept-messages");
+      const response = await axios.get<ApiResponse>("/api/accept-message");
 
       setValue("acceptMessages", response.data.isAcceptingMessage);
     } catch (error) {
@@ -77,14 +77,15 @@ const DashboardPage = (props: Props) => {
             description: "Showing Latest Messages!",
           });
         }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
-        toast({
-          title: "Error",
-          description:
-            axiosError.response?.data.message || "Failed to fetch all messages",
-          variant: "destructive",
-        });
+      } catch (error: any) {
+        console.log(error);
+        // const axiosError = error as AxiosError<ApiResponse>;
+        // toast({
+        //   title: "Error",
+        //   description:
+        //     axiosError.response?.data.message || "Failed to fetch all messages",
+        //   variant: "destructive",
+        // });
       } finally {
         setIsLoading(false);
         setIsSwitchLoading(false);
@@ -98,12 +99,12 @@ const DashboardPage = (props: Props) => {
 
     fetchMessages();
     fetchAcceptMessage();
-  }, [session, setValue, fetchAcceptMessage, fetchMessages]);
+  }, [session, setValue, fetchAcceptMessage, fetchMessages, toast]);
 
   // handle Switch change
   const handleSwitchChange = async () => {
     try {
-      const response = await axios.post<ApiResponse>("/api/accept-messages", {
+      const response = await axios.post<ApiResponse>("/api/accept-message", {
         acceptMessages: !acceptMessages,
       });
 
@@ -124,20 +125,6 @@ const DashboardPage = (props: Props) => {
     }
   };
 
-  const username = session?.user as User;
-
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
-
-  const profileUrl = `${baseUrl}/u/${username}`;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(profileUrl);
-
-    toast({
-      title: "Url copied Success",
-      description: "Profile url has been copied to clipboard",
-    });
-  };
   if (!session || !session.user) {
     return (
       <Link href={"/sign-up"}>
@@ -147,6 +134,22 @@ const DashboardPage = (props: Props) => {
       </Link>
     );
   }
+
+  const { username } = session?.user as User;
+
+  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+
+  const profileUrl = `${baseUrl}/url/${username}`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(profileUrl);
+
+    toast({
+      title: "Url copied Success",
+      description: "Profile url has been copied to clipboard",
+    });
+  };
+
   return (
     <>
       <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">

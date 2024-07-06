@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth/next";
 import connectMongoDB from "@/lib/connectMongoDB";
 import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
-import mongoose from "mongoose";
 
 export async function DELETE(
   request: Request,
