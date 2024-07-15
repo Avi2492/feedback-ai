@@ -8,17 +8,6 @@ const UsernameQuerySchema = z.object({
 });
 
 export async function GET(request: Request) {
-  // Check to handle post resquest use this in all other routes
-  // if (request.method !== "GET") {
-  //   return Response.json(
-  //     {
-  //       success: false,
-  //       message: "Only Get Request allowed",
-  //     },
-  //     { status: 405 }
-  //   );
-  // }
-
   await connectMongoDB();
 
   try {
@@ -84,3 +73,14 @@ export async function GET(request: Request) {
     );
   }
 }
+
+// Check to handle post resquest use this in all other routes
+// if (request.method !== "GET") {
+//   return Response.json(
+//     {
+//       success: false,
+//       message: "Only Get Request allowed",
+//     },
+//     { status: 405 }
+//   );
+// }

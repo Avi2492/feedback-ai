@@ -1,12 +1,14 @@
 import connectMongoDB from "@/lib/connectMongoDB";
-import UserModel from "@/models/User";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/options";
-import { User, getServerSession } from "next-auth";
+import UserModel from "@/models/User";
+import { User } from "next-auth";
 
 export async function POST(request: Request) {
   await connectMongoDB();
 
   const session = await getServerSession(authOptions);
+
   const user: User = session?.user;
 
   if (!session || !session.user) {
@@ -25,7 +27,7 @@ export async function POST(request: Request) {
   try {
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      { isAcceptingMessage: acceptMessages },
+      { isAcceptingMessages: acceptMessages },
       { new: true }
     );
 
@@ -64,9 +66,9 @@ export async function GET(request: Request) {
   await connectMongoDB();
 
   const session = await getServerSession(authOptions);
-  const user: User = session?.user;
+  const user = session?.user;
 
-  if (!session || !session.user) {
+  if (!session || !user) {
     return Response.json(
       {
         success: false,
@@ -94,7 +96,7 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        isAcceptingMessages: foundUser.isAcceptingMessage,
+        isAcceptingMessages: foundUser.isAcceptingMessages,
       },
       { status: 200 }
     );
