@@ -9,11 +9,13 @@ export async function sendVerificationEmail(
 ): Promise<ApiResponse> {
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "replibot.ai <onboarding@resend.dev>",
       to: email,
       subject: "RepliBot | Verification Code",
       react: VerificationEmail({ username, otp: verifyCode }),
     });
+
+    // console.log("Send Mail OTP" + data);
 
     return { success: true, message: "Success to send verification email" };
   } catch (emailError) {

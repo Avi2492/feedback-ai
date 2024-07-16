@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { messageSchema } from "@/schemas/messageSchema";
 import { RiPlaneLine, RiSendPlaneLine, RiTelegramLine } from "@remixicon/react";
+import { Footer } from "@/app/components/Footer";
 
 const specialChar = "||";
 
@@ -97,101 +98,107 @@ export default function SendMessage() {
   };
 
   return (
-    <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
-      <h1 className="text-3xl md:text-6xl font-bold mb-6 text-center text-orange-500">
-        Public Profile Link
-      </h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex gap-1 items-center">
-                  Send Anonymous Message to{" "}
-                  <p className="bg-orange-500 text-white p-1 rounded-lg">
-                    @{username}
-                  </p>
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Write your anonymous message here"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-center">
-            {isLoading ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button>
-            ) : (
-              <Button
-                className="bg-orange-500 flex items-center gap-2 justify-center"
-                type="submit"
-                disabled={isLoading || !messageContent}
-              >
-                Send It <RiTelegramLine size={24} />
-              </Button>
-            )}
-          </div>
-        </form>
-      </Form>
-
-      <div className="space-y-4 my-8">
-        <div className="space-y-2 flex justify-center items-center">
-          <Button
-            onClick={fetchSuggestedMessages}
-            className="my-4 bg-orange-400"
-            disabled={isSuggestLoading}
-          >
-            Suggest Messages
-          </Button>
-        </div>
-        <div className="text-center">
-          <p className="text-3xl md:text-4xl">
-            Click on any message below to select it.
-          </p>
-        </div>
-        <Card>
-          <CardHeader>
-            <h3 className="text-2xl flex justify-center">
-              Some Suggested Messages for your loved ones ❤️
-            </h3>
-          </CardHeader>
-          <CardContent className="flex flex-col space-y-4">
-            {error ? (
-              <p className="text-red-500">{error.message}</p>
-            ) : (
-              parseStringMessages(completion).map((message, index) => (
+    <>
+      <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
+        <h1 className="text-3xl md:text-6xl font-bold mb-6 text-center text-orange-500">
+          Public Profile Link
+        </h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex gap-1 items-center">
+                    Send Anonymous Message to{" "}
+                    <p className="bg-orange-500 text-white p-1 rounded-lg">
+                      @{username}
+                    </p>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Write your anonymous message here"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-center">
+              {isLoading ? (
                 <Button
-                  key={index}
-                  variant="outline"
-                  className="mb-2"
-                  onClick={() => handleMessageClick(message)}
+                  disabled
+                  className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2 justify-center"
                 >
-                  {message}
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
                 </Button>
-              ))
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <Button
+                  className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2 justify-center"
+                  type="submit"
+                  disabled={isLoading || !messageContent}
+                >
+                  Send It <RiTelegramLine size={24} />
+                </Button>
+              )}
+            </div>
+          </form>
+        </Form>
+
+        <div className="space-y-4 my-8">
+          <div className="space-y-2 flex justify-center items-center">
+            <Button
+              onClick={fetchSuggestedMessages}
+              className="my-4 bg-orange-400"
+              disabled={isSuggestLoading}
+            >
+              Suggest Messages
+            </Button>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl md:text-4xl">
+              Click on any message below to select it.
+            </p>
+          </div>
+          <Card>
+            <CardHeader>
+              <h3 className="text-2xl flex justify-center">
+                Some Suggested Messages for your Friends 😊
+              </h3>
+            </CardHeader>
+            <CardContent className="flex flex-col space-y-4">
+              {error ? (
+                <p className="text-red-500">{error.message}</p>
+              ) : (
+                parseStringMessages(completion).map((message, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="mb-2"
+                    onClick={() => handleMessageClick(message)}
+                  >
+                    {message}
+                  </Button>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
+        <Separator className="my-6" />
+        <div className="text-center">
+          <div className="mb-4">Get Your Message Board</div>
+          <Link href={"/sign-up"}>
+            <Button className="bg-orange-500 hover:bg-orange-600">
+              Create Your Account
+            </Button>
+          </Link>
+        </div>
       </div>
-      <Separator className="my-6" />
-      <div className="text-center">
-        <div className="mb-4">Get Your Message Board</div>
-        <Link href={"/sign-up"}>
-          <Button className="bg-orange-500 hover:bg-orange-600">
-            Create Your Account
-          </Button>
-        </Link>
-      </div>
-    </div>
+      <Footer />
+    </>
   );
 }

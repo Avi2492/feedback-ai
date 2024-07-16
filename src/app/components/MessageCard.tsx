@@ -14,7 +14,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { RiCloseLine } from "@remixicon/react";
+import {
+  RiCloseLine,
+  RiDeleteBin2Line,
+  RiDeleteBinLine,
+} from "@remixicon/react";
 import { Message } from "@/models/User";
 import { useToast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
@@ -53,11 +57,13 @@ const MessageCard = ({ message, onMessageDelete }: Props) => {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>{message.content}</CardTitle>
+            <CardTitle className="text-xl font-semibold">
+              {message.content}
+            </CardTitle>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  <RiCloseLine size={40} />
+                <Button variant="ghost">
+                  <RiDeleteBinLine size={24} className="text-orange-600" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
