@@ -13,6 +13,10 @@ const menuItems = [
     name: "Dashboard",
     href: "/dashboard",
   },
+  {
+    name: "Profile",
+    href: "/profile",
+  },
 ];
 
 const Navbar = () => {
@@ -30,7 +34,9 @@ const Navbar = () => {
       <div className="relative w-full bg-white shadow-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
           <div className="inline-flex items-center space-x-2">
-            <Logo />
+            <Link href={"/"}>
+              <Logo />
+            </Link>
           </div>
           {session && (
             <div className="hidden grow items-start lg:flex">
@@ -51,8 +57,15 @@ const Navbar = () => {
           <div className="hidden space-x-2 lg:block">
             {session ? (
               <>
-                <span>{user?.username || user?.email || "Welcome!"}</span>
-                <Button onClick={() => signOut()}>Logout</Button>
+                <Link href={"/profile"}>
+                  <span>{user?.username || user?.email || "Welcome!"}</span>
+                </Link>
+                <Button
+                  onClick={() => signOut()}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  Logout
+                </Button>
               </>
             ) : (
               <>
@@ -122,7 +135,12 @@ const Navbar = () => {
                         <span>
                           {user?.username || user?.email || "Welcome!"}
                         </span>
-                        <Button onClick={() => signOut()}>Logout</Button>
+                        <Button
+                          onClick={() => signOut()}
+                          className="bg-orange-500 hover:bg-orange-600"
+                        >
+                          Logout
+                        </Button>
                       </>
                     ) : (
                       <>

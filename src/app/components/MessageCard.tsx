@@ -70,13 +70,16 @@ const MessageCard = ({ message, onMessageDelete }: Props) => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
+                    This action cannot be reversed. This will permanently delete
+                    your messages and remove from servers.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteConfirm}>
+                  <AlertDialogAction
+                    onClick={handleDeleteConfirm}
+                    className="bg-orange-500 hover:bg-orange-600"
+                  >
                     Continue
                   </AlertDialogAction>
                 </AlertDialogFooter>
