@@ -63,7 +63,7 @@ const SignInPage = () => {
     }
 
     if (result?.url) {
-      router.push("/dashboard");
+      router.push("/");
     }
 
     setIsSubmitting(false);
