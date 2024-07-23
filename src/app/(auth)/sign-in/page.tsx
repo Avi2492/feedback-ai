@@ -20,8 +20,6 @@ import { signInSchema } from "@/schemas/signInSchema";
 import Logo from "@/app/components/Logo";
 import { useState } from "react";
 import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
-import { AxiosError } from "axios";
-import { ApiResponse } from "@/types/ApiResponse";
 
 const SignInPage = () => {
   const router = useRouter();

@@ -15,9 +15,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { verifySchema } from "@/schemas/verifySchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RiLoader2Line, RiLoginCircleLine } from "@remixicon/react";
 import axios, { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -25,12 +26,15 @@ const VerifyAccount = () => {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof verifySchema>>({
     resolver: zodResolver(verifySchema),
   });
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
+    setIsSubmitting(true);
+
     try {
       const response = await axios.post<ApiResponse>(`/api/verify-code`, {
         username: params.username,
@@ -52,6 +56,8 @@ const VerifyAccount = () => {
           "An error occurred. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(true);
     }
   };
   return (
@@ -91,8 +97,18 @@ const VerifyAccount = () => {
                 <Button
                   type="submit"
                   className="bg-orange-500 hover:bg-orange-600 w-full"
+                  disabled={isSubmitting}
                 >
-                  Submit
+                  {isSubmitting ? (
+                    <>
+                      <RiLoader2Line className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <RiLoginCircleLine className="mr-2" /> Verify Your Otp
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>

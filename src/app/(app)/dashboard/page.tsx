@@ -152,7 +152,7 @@ const DashboardPage = (props: Props) => {
 
   return (
     <>
-      <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
+      <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl h-screen">
         <h1 className="text-4xl font-bold mb-4">Profile Dashboard</h1>
 
         <div className="mb-4">

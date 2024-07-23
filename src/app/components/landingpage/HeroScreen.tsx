@@ -2,10 +2,16 @@
 import { Button } from "@/components/ui/button";
 import Logo from "../../components/Logo";
 import Typewriter from "typewriter-effect";
-import { RiMailLine } from "@remixicon/react";
+import { RiArrowRightLine, RiMailLine } from "@remixicon/react";
+
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 import Link from "next/link";
 
 const HeroScreen = () => {
+  const { data: session } = useSession();
+
+  const user: User = session?.user;
   return (
     <>
       <div className="flex h-screen w-full justify-center items-center">
@@ -31,11 +37,22 @@ const HeroScreen = () => {
             />
           </span>
           <div className="mt-6">
-            <Link href={"/sign-in"}>
-              <Button className="bg-orange-500 hover:bg-orange-600 rounded-xl">
-                <RiMailLine className="mr-2 h-4 w-4" /> Login with Email
-              </Button>
-            </Link>
+            {session ? (
+              <>
+                <p className="text-xl">
+                  Welcome,{" "}
+                  <span className="text-orange-500 hover:underline">
+                    {user?.username || user?.email || "Welcome!"}
+                  </span>
+                </p>
+              </>
+            ) : (
+              <>
+                <Button className="bg-orange-500 hover:bg-orange-600 rounded-xl gap-1">
+                  Get Started <RiArrowRightLine size={20} />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
