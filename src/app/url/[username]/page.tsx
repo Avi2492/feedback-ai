@@ -24,8 +24,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { messageSchema } from "@/schemas/messageSchema";
-import { RiPlaneLine, RiSendPlaneLine, RiTelegramLine } from "@remixicon/react";
-import { Footer } from "@/app/components/Footer";
+import { RiTelegramLine } from "@remixicon/react";
 
 const specialChar = "||";
 
@@ -198,7 +197,6 @@ export default function SendMessage() {
           </Link>
         </div>
       </div>
-      <Footer />
     </>
   );
 }
