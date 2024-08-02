@@ -16,6 +16,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ErrorPage from "@/app/components/error/ErrorPage";
 
 type Props = {};
 
@@ -127,11 +128,9 @@ const DashboardPage = (props: Props) => {
 
   if (!session || !session.user) {
     return (
-      <Link href={"/sign-up"}>
-        <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-          Sign Up Please
-        </Button>
-      </Link>
+      <>
+        <ErrorPage />
+      </>
     );
   }
 
